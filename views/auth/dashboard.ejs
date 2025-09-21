@@ -1,0 +1,211 @@
+<%- include('../partials/header') %>
+
+<div class="container mt-4">
+  <!-- Welcome Header -->
+  <div class="row">
+    <div class="col-12">
+      <div class="jumbotron bg-primary text-white p-4 rounded">
+        <h1 class="display-4">Welcome, <%= user.displayName %>!</h1>
+        <p class="lead">You are successfully logged in and your session is active.</p>
+        <hr class="my-4">
+        <p>Last login: <%= user.lastLogin ? new Date(user.lastLogin).toLocaleString() : 'First time login' %></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Flash Messages -->
+  <% if (error && error.length > 0) { %>
+    <div class="alert alert-danger">
+      <%= error %>
+    </div>
+  <% } %>
+  
+  <% if (success && success.length > 0) { %>
+    <div class="alert alert-success">
+      <%= success %>
+    </div>
+  <% } %>
+
+  <!-- Navigation Cards -->
+  <div class="row mb-4">
+    <div class="col-md-3 mb-3">
+      <div class="card">
+        <div class="card-body text-center">
+          <h5 class="card-title">Products</h5>
+          <p class="card-text">Manage products</p>
+          <a href="/products" class="btn btn-primary">Go to Products</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3 mb-3">
+      <div class="card">
+        <div class="card-body text-center">
+          <h5 class="card-title">Suppliers</h5>
+          <p class="card-text">Manage suppliers</p>
+          <a href="/suppliers" class="btn btn-info">Go to Suppliers</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3 mb-3">
+      <div class="card">
+        <div class="card-body text-center">
+          <h5 class="card-title">Profile</h5>
+          <p class="card-text">Edit your profile</p>
+          <a href="/auth/profile" class="btn btn-warning">Edit Profile</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3 mb-3">
+      <div class="card">
+        <div class="card-body text-center">
+          <h5 class="card-title">Security</h5>
+          <p class="card-text">Change your password</p>
+          <a href="/auth/change-password" class="btn btn-info">
+            <i class="fas fa-key"></i> Change Password
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3 mb-3">
+      <div class="card">
+        <div class="card-body text-center">
+          <h5 class="card-title">Logout</h5>
+          <p class="card-text">End your session</p>
+          <a href="/auth/logout" class="btn btn-danger">Logout</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Session and Cookie Information -->
+  <div class="row">
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-header">
+          <h5>Session Information</h5>
+        </div>
+        <div class="card-body">
+          <table class="table table-sm">
+            <tr>
+              <th>Session ID:</th>
+              <td class="font-monospace"><%= sessionInfo.sessionId %></td>
+            </tr>
+            <tr>
+              <th>User ID:</th>
+              <td><%= user._id %></td>
+            </tr>
+            <tr>
+              <th>Username:</th>
+              <td><%= user.username %></td>
+            </tr>
+            <tr>
+              <th>Email:</th>
+              <td><%= user.email %></td>
+            </tr>
+            <tr>
+              <th>Role:</th>
+              <td><span class="badge bg-<%= user.role === 'admin' ? 'danger' : 'secondary' %>"><%= user.role %></span></td>
+            </tr>
+            <tr>
+              <th>Login Time:</th>
+              <td><%= sessionInfo.sessionData.user.loginTime %></td>
+            </tr>
+            <tr>
+              <th>Account Created:</th>
+              <td><%= new Date(user.createdAt).toLocaleString() %></td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-header">
+          <h5>Cookie Information</h5>
+        </div>
+        <div class="card-body">
+          <h6>Session Authentication Info:</h6>
+          <div class="mb-3">
+            <div class="mb-2">
+              <strong>Session ID (connect.sid):</strong>
+              <br>
+              <small class="text-muted font-monospace"><%= sessionInfo.sessionId %></small>
+              <br>
+              <small class="text-success">✓ Được sử dụng để xác thực tự động</small>
+            </div>
+            
+            <div class="mb-2">
+              <strong>User ID trong session:</strong>
+              <br>
+              <small class="text-muted font-monospace"><%= user._id %></small>
+              <br>
+              <small class="text-info">ℹ️ ID duy nhất của user trong database</small>
+            </div>
+            
+            <div class="mb-2">
+              <strong>Login Time:</strong>
+              <br>
+              <small class="text-muted"><%= new Date(user.loginTime).toLocaleString('vi-VN') %></small>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <h6>Cookie Security Info:</h6>
+            <div class="alert alert-warning alert-sm">
+              <small>
+                <strong>🔐 Session Cookie (connect.sid):</strong><br>
+                • Được mã hóa và ký số bởi Express Session<br>
+                • Chỉ server mới có thể giải mã và xác thực<br>
+                • Tự động gửi kèm mọi request để xác thực user<br>
+                • Thời gian sống: <span id="cookie-duration">Calculating...</span><br>
+                • <strong>Đây là cookie chính để xác thực!</strong>
+              </small>
+            </div>
+            
+            <div class="alert alert-info alert-sm">
+              <small>
+                <strong>📋 User Session Data:</strong><br>
+                • Username: <%= user.username %><br>
+                • Role: <%= user.role %><br>
+                • Login Time: <%= user.loginTime %><br>
+                • Được lưu an toàn trong server session store
+              </small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+</div>
+
+<script>
+// JavaScript for session timer and cookie info
+document.addEventListener('DOMContentLoaded', function() {
+  updateCookieInfo();
+  setInterval(updateCookieInfo, 1000); // Update every second
+});
+
+function updateCookieInfo() {
+  const loginTime = new Date('<%= sessionInfo.sessionData.user.loginTime %>');
+  const now = new Date();
+  const sessionAge = Math.floor((now - loginTime) / 1000); // seconds
+  
+  // Calculate cookie duration (24 hours default = 86400000 ms)
+  const cookieMaxAge = parseInt('<%= sessionInfo.sessionData.cookie.maxAge || 86400000 %>'); // milliseconds
+  const cookieDurationHours = Math.floor(cookieMaxAge / (1000 * 60 * 60));
+  const timeUntilExpirySeconds = Math.floor(cookieMaxAge / 1000) - sessionAge;
+  
+  if (timeUntilExpirySeconds > 0) {
+    const expHours = Math.floor(timeUntilExpirySeconds / 3600);
+    const expMinutes = Math.floor((timeUntilExpirySeconds % 3600) / 60);
+    
+    document.getElementById('cookie-duration').innerHTML = 
+      `<strong>${cookieDurationHours} giờ</strong> (còn lại: ${expHours}h ${expMinutes}m)`;
+  } else {
+    document.getElementById('cookie-duration').innerHTML = 
+      `<span class="text-danger">Đã hết hạn</span>`;
+  }
+}
+</script>
+
+<%- include('../partials/footer') %>

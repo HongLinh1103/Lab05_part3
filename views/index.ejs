@@ -1,0 +1,250 @@
+<%- include('partials/header') %>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="jumbotron bg-primary text-white rounded p-5 mb-4">
+                <h1 class="display-4">
+                    Hệ Thống Quản Lý Sản Phẩm & Nhà Cung Cấp CRUD
+                </h1>
+                <p class="lead">Quản lý hiệu quả các nhà cung cấp và sản phẩm với ứng dụng CRUD toàn diện của chúng tôi.
+                </p>
+                <hr class="my-4">
+                <p>Được xây dựng với Node.js, Express, MongoDB và Bootstrap để mang đến trải nghiệm web hiện đại.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Authentication Notice -->
+    <% if (!user) { %>
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="alert alert-info" role="alert">
+                    <h5 class="alert-heading">
+                        <i class="fas fa-lock me-2"></i>
+                        Yêu Cầu Đăng Nhập
+                    </h5>
+                    <p class="mb-0">
+                        Để thực hiện các chức năng quản lý sản phẩm và nhà cung cấp (thêm, sửa, xóa),
+                        bạn cần <a href="/auth/login" class="alert-link">đăng nhập</a> vào hệ thống.
+                    </p>
+                    <hr>
+                    <p class="mb-0">
+                        Chưa có tài khoản?
+                        <a href="/auth/register" class="alert-link">Đăng ký ngay</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+        <% } else { %>
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="alert alert-success" role="alert">
+                        <h5 class="alert-heading">
+                            <i class="fas fa-user-check me-2"></i>
+                            Chào mừng, <%= user.fullName || user.username %>!
+                        </h5>
+                        <p class="mb-0">
+                            Bạn có thể quản lý toàn bộ hệ thống.
+                            <a href="/dashboard" class="alert-link">Vào bảng điều khiển</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <% } %>
+
+                <!-- Search and Filter Section -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">
+                                    <i class="fas fa-search me-2"></i>
+                                    Tìm Kiếm & Lọc Sản Phẩm
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <form method="GET" action="/" class="row g-3">
+                                    <div class="col-md-6">
+                                        <label for="search" class="form-label">Tìm kiếm theo tên sản phẩm:</label>
+                                        <input type="text" class="form-control" id="search" name="search"
+                                            placeholder="Nhập tên sản phẩm..." value="<%= searchTerm %>">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="supplier" class="form-label">Chọn nhà cung cấp:</label>
+                                        <select class="form-select" id="supplier" name="supplier">
+                                            <option value="">Tất cả nhà cung cấp</option>
+                                            <% suppliers.forEach(sup=> { %>
+                                                <option value="<%= sup._id %>" <%=selectedSupplier===sup._id.toString()
+                                                    ? 'selected' : '' %>>
+                                                    <%= sup.name %>
+                                                </option>
+                                                <% }) %>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label">&nbsp;</label>
+                                        <div class="d-grid">
+                                            <button type="submit" class="btn btn-primary">
+                                                <i class="fas fa-search me-2"></i>Tìm kiếm
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Products Display Section -->
+                <% if (products && products.length> 0) { %>
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="card-title mb-0">
+                                        <i class="fas fa-box me-2"></i>
+                                        Sản Phẩm Mới Nhất
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <% products.forEach(product=> { %>
+                                            <div class="col-md-4 mb-3">
+                                                <div class="card h-100">
+                                                    <div class="card-body">
+                                                        <h6 class="card-title">
+                                                            <%= product.name %>
+                                                        </h6>
+                                                        <p class="card-text">
+                                                            <strong>Giá:</strong>
+                                                            <%= new Intl.NumberFormat('vi-VN', { style: 'currency' ,
+                                                                currency: 'VND' }).format(product.price) %><br>
+                                                                <strong>Số lượng:</strong>
+                                                                <%= product.quantity %><br>
+                                                                    <strong>Nhà cung cấp:</strong>
+                                                                    <%= product.supplierId.name %>
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <% }) %>
+                                    </div>
+                                    <div class="text-center mt-3">
+                                        <% if (user) { %>
+                                            <a href="/products" class="btn btn-primary">
+                                                <i class="fas fa-eye me-2"></i>Xem tất cả sản phẩm
+                                            </a>
+                                            <a href="/suppliers" class="btn btn-success ms-2">
+                                                <i class="fas fa-truck me-2"></i>Quản lý nhà cung cấp
+                                            </a>
+                                            <% } else { %>
+                                                <a href="/auth/login" class="btn btn-warning">
+                                                    <i class="fas fa-sign-in-alt me-2"></i>Đăng nhập để quản lý
+                                                </a>
+                                                <% } %>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <% } %>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <div class="card h-100">
+                                    <div class="card-header bg-success text-white">
+                                        <h5 class="card-title mb-0">
+                                            <i class="fas fa-truck me-2"></i>
+                                            Quản Lý Nhà Cung Cấp
+                                        </h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <p class="card-text">
+                                            Quản lý cơ sở dữ liệu nhà cung cấp bao gồm thông tin liên hệ, địa chỉ và số
+                                            điện thoại.
+                                        </p>
+                                        <ul class="list-unstyled">
+                                            <li><i class="fas fa-check text-success me-2"></i>Thêm nhà cung cấp mới</li>
+                                            <li><i class="fas fa-check text-success me-2"></i>Chỉnh sửa thông tin nhà
+                                                cung cấp</li>
+                                            <li><i class="fas fa-check text-success me-2"></i>Xem chi tiết nhà cung cấp
+                                            </li>
+                                            <li><i class="fas fa-check text-success me-2"></i>Xóa nhà cung cấp</li>
+                                        </ul>
+                                    </div>
+                                    <div class="card-footer">
+                                        <a href="/suppliers" class="btn btn-success">
+                                            <i class="fas fa-eye me-2"></i>Xem Nhà Cung Cấp
+                                        </a>
+                                        <a href="/suppliers/new" class="btn btn-outline-success">
+                                            <i class="fas fa-plus me-2"></i>Thêm Nhà Cung Cấp
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 mb-4">
+                                <div class="card h-100">
+                                    <div class="card-header bg-info text-white">
+                                        <h5 class="card-title mb-0">
+                                            <i class="fas fa-box me-2"></i>
+                                            Quản Lý Sản Phẩm
+                                        </h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <p class="card-text">
+                                            Quản lý kho hàng sản phẩm với giá cả, số lượng và mối quan hệ với nhà cung
+                                            cấp.
+                                        </p>
+                                        <ul class="list-unstyled">
+                                            <li><i class="fas fa-check text-info me-2"></i>Thêm sản phẩm mới</li>
+                                            <li><i class="fas fa-check text-info me-2"></i>Cập nhật chi tiết sản phẩm
+                                            </li>
+                                            <li><i class="fas fa-check text-info me-2"></i>Theo dõi tồn kho</li>
+                                            <li><i class="fas fa-check text-info me-2"></i>Liên kết với nhà cung cấp
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div class="card-footer">
+                                        <a href="/products" class="btn btn-info">
+                                            <i class="fas fa-eye me-2"></i>Xem Sản Phẩm
+                                        </a>
+                                        <a href="/products/new" class="btn btn-outline-info">
+                                            <i class="fas fa-plus me-2"></i>Thêm Sản Phẩm
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5 class="card-title mb-0">
+                                            <i class="fas fa-info-circle me-2"></i>
+                                            Tính Năng Hệ Thống
+                                        </h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <h6><i class="fas fa-database text-primary me-2"></i>Cơ Sở Dữ Liệu</h6>
+                                                <p class="small">MongoDB với Mongoose ODM để quản lý dữ liệu mạnh mẽ</p>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <h6><i class="fas fa-sitemap text-primary me-2"></i>Kiến Trúc</h6>
+                                                <p class="small">Mô hình MVC (Model-View-Controller) để tách biệt rõ
+                                                    ràng</p>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <h6><i class="fas fa-mobile-alt text-primary me-2"></i>Responsive</h6>
+                                                <p class="small">Thiết kế responsive với Bootstrap cho mọi thiết bị</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <%- include('partials/footer') %>

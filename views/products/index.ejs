@@ -1,0 +1,157 @@
+<%- include('../partials/header') %>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>
+        <i class="fas fa-box text-info me-2"></i>
+        Sản Phẩm
+    </h2>
+    <a href="/products/new" class="btn btn-info">
+        <i class="fas fa-plus me-2"></i>Thêm Sản Phẩm Mới
+    </a>
+</div>
+
+<!-- Search and Filter Section -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="card-title mb-0">
+            <i class="fas fa-search me-2"></i>
+            Tìm Kiếm & Lọc Sản Phẩm
+        </h5>
+    </div>
+    <div class="card-body">
+        <form method="GET" action="/products" class="row g-3">
+            <div class="col-md-6">
+                <label for="search" class="form-label">Tìm kiếm theo tên sản phẩm:</label>
+                <input type="text" 
+                       class="form-control" 
+                       id="search" 
+                       name="search" 
+                       placeholder="Nhập tên sản phẩm..." 
+                       value="<%= searchTerm %>">
+            </div>
+            <div class="col-md-4">
+                <label for="supplier" class="form-label">Chọn nhà cung cấp:</label>
+                <select class="form-select" id="supplier" name="supplier">
+                    <option value="">Tất cả nhà cung cấp</option>
+                    <% suppliers.forEach(sup => { %>
+                        <option value="<%= sup._id %>" <%= selectedSupplier === sup._id.toString() ? 'selected' : '' %>>
+                            <%= sup.name %>
+                        </option>
+                    <% }) %>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">&nbsp;</label>
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-search me-2"></i>Tìm kiếm
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<% if (products && products.length > 0) { %>
+    <div class="card">
+        <div class="card-header">
+            <h5 class="card-title mb-0">
+                <i class="fas fa-list me-2"></i>
+                Tất Cả Sản Phẩm (<%= products.length %>)
+            </h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover mb-0">
+                    <thead class="table-dark">
+                        <tr>
+                            <th><i class="fas fa-tag me-1"></i>Tên</th>
+                            <th><i class="fas fa-dollar-sign me-1"></i>Giá</th>
+                            <th><i class="fas fa-cubes me-1"></i>Số Lượng</th>
+                            <th><i class="fas fa-truck me-1"></i>Nhà Cung Cấp</th>
+                            <th><i class="fas fa-calendar me-1"></i>Ngày Tạo</th>
+                            <th class="text-center"><i class="fas fa-cogs me-1"></i>Thao Tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% products.forEach(product => { %>
+                            <tr>
+                                <td>
+                                    <strong><%= product.name %></strong>
+                                </td>
+                                <td>
+                                    <span class="badge bg-success">
+                                        $<%= product.price.toFixed(2) %>
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-<%= product.quantity > 0 ? 'primary' : 'danger' %>">
+                                        <%= product.quantity %>
+                                    </span>
+                                </td>
+                                <td>
+                                    <% if (product.supplierId) { %>
+                                        <a href="/suppliers/<%= product.supplierId._id %>" 
+                                           class="text-decoration-none">
+                                            <i class="fas fa-external-link-alt me-1"></i>
+                                            <%= product.supplierId.name %>
+                                        </a>
+                                    <% } else { %>
+                                        <span class="text-muted">No supplier</span>
+                                    <% } %>
+                                </td>
+                                <td>
+                                    <small class="text-muted">
+                                        <%= new Date(product.createdAt).toLocaleDateString() %>
+                                    </small>
+                                </td>
+                                <td class="text-center">
+                                    <div class="btn-group" role="group">
+                                        <a href="/products/<%= product._id %>" 
+                                           class="btn btn-sm btn-outline-primary" 
+                                           title="View Details">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a href="/products/<%= product._id %>/edit" 
+                                           class="btn btn-sm btn-outline-warning" 
+                                           title="Edit">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <form method="POST" action="/products/<%= product._id %>?_method=DELETE" 
+                                              style="display: inline;" 
+                                              onsubmit="return confirmDelete('product', '<%= product.name %>')">
+                                            <button type="submit" 
+                                                    class="btn btn-sm btn-outline-danger" 
+                                                    title="Delete">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+<% } else { %>
+    <div class="card">
+        <div class="card-body text-center py-5">
+            <i class="fas fa-box fa-4x text-muted mb-4"></i>
+            <h4 class="text-muted">No Products Found</h4>
+            <p class="text-muted">You haven't added any products yet. Start by adding your first product.</p>
+            <a href="/products/new" class="btn btn-info">
+                <i class="fas fa-plus me-2"></i>Add Your First Product
+            </a>
+        </div>
+    </div>
+<% } %>
+
+<div class="mt-4">
+    <a href="/" class="btn btn-secondary">
+        <i class="fas fa-arrow-left me-2"></i>Back to Home
+    </a>
+</div>
+
+<%- include('../partials/footer') %>

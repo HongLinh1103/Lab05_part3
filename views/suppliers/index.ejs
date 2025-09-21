@@ -1,0 +1,98 @@
+<%- include('../partials/header') %>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>
+        <i class="fas fa-truck text-success me-2"></i>
+        Nhà Cung Cấp
+    </h2>
+    <a href="/suppliers/new" class="btn btn-success">
+        <i class="fas fa-plus me-2"></i>Thêm Nhà Cung Cấp Mới
+    </a>
+</div>
+
+<% if (suppliers && suppliers.length > 0) { %>
+    <div class="card">
+        <div class="card-header">
+            <h5 class="card-title mb-0">
+                <i class="fas fa-list me-2"></i>
+                Tất Cả Nhà Cung Cấp (<%= suppliers.length %>)
+            </h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover mb-0">
+                    <thead class="table-dark">
+                        <tr>
+                            <th><i class="fas fa-id-badge me-1"></i>Tên</th>
+                            <th><i class="fas fa-map-marker-alt me-1"></i>Địa Chỉ</th>
+                            <th><i class="fas fa-phone me-1"></i>Điện Thoại</th>
+                            <th><i class="fas fa-calendar me-1"></i>Ngày Tạo</th>
+                            <th class="text-center"><i class="fas fa-cogs me-1"></i>Thao Tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% suppliers.forEach(supplier => { %>
+                            <tr>
+                                <td>
+                                    <strong><%= supplier.name %></strong>
+                                </td>
+                                <td><%= supplier.address %></td>
+                                <td>
+                                    <i class="fas fa-phone-alt text-muted me-1"></i>
+                                    <%= supplier.phone %>
+                                </td>
+                                <td>
+                                    <small class="text-muted">
+                                        <%= new Date(supplier.createdAt).toLocaleDateString() %>
+                                    </small>
+                                </td>
+                                <td class="text-center">
+                                    <div class="btn-group" role="group">
+                                        <a href="/suppliers/<%= supplier._id %>" 
+                                           class="btn btn-sm btn-outline-primary" 
+                                           title="Xem Chi Tiết">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a href="/suppliers/<%= supplier._id %>/edit" 
+                                           class="btn btn-sm btn-outline-warning" 
+                                           title="Chỉnh Sửa">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <form method="POST" action="/suppliers/<%= supplier._id %>?_method=DELETE" 
+                                              style="display: inline;" 
+                                              onsubmit="return confirmDelete('nhà cung cấp', '<%= supplier.name %>')">
+                                            <button type="submit" 
+                                                    class="btn btn-sm btn-outline-danger" 
+                                                    title="Xóa">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+<% } else { %>
+    <div class="card">
+        <div class="card-body text-center py-5">
+            <i class="fas fa-truck fa-4x text-muted mb-4"></i>
+            <h4 class="text-muted">Không Tìm Thấy Nhà Cung Cấp</h4>
+            <p class="text-muted">Bạn chưa thêm nhà cung cấp nào. Hãy bắt đầu bằng cách thêm nhà cung cấp đầu tiên.</p>
+            <a href="/suppliers/new" class="btn btn-success">
+                <i class="fas fa-plus me-2"></i>Thêm Nhà Cung Cấp Đầu Tiên
+            </a>
+        </div>
+    </div>
+<% } %>
+
+<div class="mt-4">
+    <a href="/" class="btn btn-secondary">
+        <i class="fas fa-arrow-left me-2"></i>Về Trang Chủ
+    </a>
+</div>
+
+<%- include('../partials/footer') %>

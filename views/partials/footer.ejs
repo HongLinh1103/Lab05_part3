@@ -1,0 +1,36 @@
+</div>
+
+<footer class="bg-dark text-light mt-5 py-4">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <h5>Product Supplier Management</h5>
+                <p class="mb-0">A comprehensive CRUD application for managing suppliers and products.</p>
+            </div>
+            <div class="col-md-6 text-md-end">
+                <p class="mb-0">Built with Node.js, Express, MongoDB & Bootstrap</p>
+                <p class="mb-0">&copy; 2025 Lab5 Project. All rights reserved.</p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Auto-hide alerts after 5 seconds
+    setTimeout(function () {
+        const alerts = document.querySelectorAll('.alert');
+        alerts.forEach(function (alert) {
+            const bsAlert = new bootstrap.Alert(alert);
+            bsAlert.close();
+        });
+    }, 5000);
+
+    // Confirm delete actions
+    function confirmDelete(type, name) {
+        return confirm(`Are you sure you want to delete this ${type}: ${name}?`);
+    }
+</script>
+</body>
+
+</html>

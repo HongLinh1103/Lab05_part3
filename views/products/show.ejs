@@ -1,0 +1,168 @@
+<%- include('../partials/header') %>
+
+<div class="container mt-5">
+  <div class="row">
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h4>Chi Tiết Sản Phẩm</h4>
+          <div>
+            <a href="/products/<%= product._id %>/edit" class="btn btn-warning btn-sm">
+              <i class="fas fa-edit"></i> Sửa
+            </a>
+            <a href="/products" class="btn btn-secondary btn-sm">
+              <i class="fas fa-arrow-left"></i> Quay lại
+            </a>
+          </div>
+        </div>
+        <div class="card-body">
+          <!-- Display flash messages -->
+          <% if (error && error.length > 0) { %>
+            <div class="alert alert-danger">
+              <%= error %>
+            </div>
+          <% } %>
+          
+          <% if (success && success.length > 0) { %>
+            <div class="alert alert-success">
+              <%= success %>
+            </div>
+          <% } %>
+
+          <div class="row">
+            <div class="col-md-12">
+              <table class="table table-bordered">
+                <tbody>
+                  <tr>
+                    <th width="30%">Tên sản phẩm:</th>
+                    <td><%= product.name %></td>
+                  </tr>
+                  <tr>
+                    <th>Mô tả:</th>
+                    <td><%= product.description || 'Chưa có mô tả' %></td>
+                  </tr>
+                  <tr>
+                    <th>Giá:</th>
+                    <td class="text-success font-weight-bold">
+                      <%= new Intl.NumberFormat('vi-VN', {
+                        style: 'currency', 
+                        currency: 'VND'
+                      }).format(product.price) %>
+                    </td>
+                  </tr>
+                  <tr>
+                    <th>Số lượng:</th>
+                    <td>
+                      <span class="badge bg-<%= product.quantity > 0 ? 'success' : 'danger' %>">
+                        <%= product.quantity %> <%= product.quantity > 0 ? 'có sẵn' : 'hết hàng' %>
+                      </span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <th>Danh mục:</th>
+                    <td>
+                      <span class="badge bg-primary"><%= product.category %></span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <th>Nhà cung cấp:</th>
+                    <td>
+                      <% if (product.supplierId && product.supplierId.name) { %>
+                        <a href="/suppliers/<%= product.supplierId._id %>" class="text-decoration-none">
+                          <%= product.supplierId.name %>
+                        </a>
+                      <% } else { %>
+                        <span class="text-muted">Chưa có nhà cung cấp</span>
+                      <% } %>
+                    </td>
+                  </tr>
+                  <tr>
+                    <th>Ngày tạo:</th>
+                    <td><%= new Date(product.createdAt).toLocaleString('vi-VN') %></td>
+                  </tr>
+                  <tr>
+                    <th>Cập nhật cuối:</th>
+                    <td><%= new Date(product.updatedAt).toLocaleString('vi-VN') %></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-md-4">
+      <div class="card">
+        <div class="card-header">
+          <h5>Thao tác</h5>
+        </div>
+        <div class="card-body">
+          <div class="d-grid gap-2">
+            <a href="/products/<%= product._id %>/edit" class="btn btn-warning">
+              <i class="fas fa-edit"></i> Chỉnh sửa sản phẩm
+            </a>
+            
+            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
+              <i class="fas fa-trash"></i> Xóa sản phẩm
+            </button>
+            
+            <a href="/products" class="btn btn-secondary">
+              <i class="fas fa-list"></i> Danh sách sản phẩm
+            </a>
+            
+            <a href="/products/new" class="btn btn-success">
+              <i class="fas fa-plus"></i> Thêm sản phẩm mới
+            </a>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Product Statistics -->
+      <div class="card mt-3">
+        <div class="card-header">
+          <h6>Thống kê</h6>
+        </div>
+        <div class="card-body">
+          <div class="row text-center">
+            <div class="col-6">
+              <h5 class="text-primary"><%= product.quantity %></h5>
+              <small class="text-muted">Số lượng</small>
+            </div>
+            <div class="col-6">
+              <h5 class="text-success">
+                <%= Math.floor(product.price / 1000) %>K
+              </h5>
+              <small class="text-muted">Giá (x1000 VND)</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteModalLabel">Xác nhận xóa</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Bạn có chắc chắn muốn xóa sản phẩm "<strong><%= product.name %></strong>" không?
+        <br><br>
+        <small class="text-danger">Hành động này không thể hoàn tác!</small>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+        <form action="/products/<%= product._id %>?_method=DELETE" method="POST" style="display: inline;">
+          <button type="submit" class="btn btn-danger">Xóa</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

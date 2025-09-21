@@ -1,0 +1,196 @@
+<%- include('../partials/header') %>
+
+<div class="container mt-5">
+  <div class="row">
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h4>Chi Tiết Nhà Cung Cấp</h4>
+          <div>
+            <a href="/suppliers/<%= supplier._id %>/edit" class="btn btn-warning btn-sm">
+              <i class="fas fa-edit"></i> Sửa
+            </a>
+            <a href="/suppliers" class="btn btn-secondary btn-sm">
+              <i class="fas fa-arrow-left"></i> Quay lại
+            </a>
+          </div>
+        </div>
+        <div class="card-body">
+          <!-- Display flash messages -->
+          <% if (error && error.length > 0) { %>
+            <div class="alert alert-danger">
+              <%= error %>
+            </div>
+          <% } %>
+          
+          <% if (success && success.length > 0) { %>
+            <div class="alert alert-success">
+              <%= success %>
+            </div>
+          <% } %>
+
+          <div class="row">
+            <div class="col-md-12">
+              <table class="table table-bordered">
+                <tbody>
+                  <tr>
+                    <th width="30%">Tên nhà cung cấp:</th>
+                    <td><%= supplier.name %></td>
+                  </tr>
+                  <tr>
+                    <th>Địa chỉ:</th>
+                    <td><%= supplier.address || 'Chưa có địa chỉ' %></td>
+                  </tr>
+                  <tr>
+                    <th>Số điện thoại:</th>
+                    <td>
+                      <% if (supplier.phone) { %>
+                        <a href="tel:<%= supplier.phone %>" class="text-decoration-none">
+                          <%= supplier.phone %>
+                        </a>
+                      <% } else { %>
+                        <span class="text-muted">Chưa có số điện thoại</span>
+                      <% } %>
+                    </td>
+                  </tr>
+                  <tr>
+                    <th>Email:</th>
+                    <td>
+                      <% if (supplier.email) { %>
+                        <a href="mailto:<%= supplier.email %>" class="text-decoration-none">
+                          <%= supplier.email %>
+                        </a>
+                      <% } else { %>
+                        <span class="text-muted">Chưa có email</span>
+                      <% } %>
+                    </td>
+                  </tr>
+                  <tr>
+                    <th>Website:</th>
+                    <td>
+                      <% if (supplier.website) { %>
+                        <a href="<%= supplier.website %>" target="_blank" class="text-decoration-none">
+                          <%= supplier.website %> <i class="fas fa-external-link-alt"></i>
+                        </a>
+                      <% } else { %>
+                        <span class="text-muted">Chưa có website</span>
+                      <% } %>
+                    </td>
+                  </tr>
+                  <tr>
+                    <th>Mô tả:</th>
+                    <td><%= supplier.description || 'Chưa có mô tả' %></td>
+                  </tr>
+                  <tr>
+                    <th>Ngày tạo:</th>
+                    <td><%= new Date(supplier.createdAt).toLocaleString('vi-VN') %></td>
+                  </tr>
+                  <tr>
+                    <th>Cập nhật cuối:</th>
+                    <td><%= new Date(supplier.updatedAt).toLocaleString('vi-VN') %></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-md-4">
+      <div class="card">
+        <div class="card-header">
+          <h5>Thao tác</h5>
+        </div>
+        <div class="card-body">
+          <div class="d-grid gap-2">
+            <a href="/suppliers/<%= supplier._id %>/edit" class="btn btn-warning">
+              <i class="fas fa-edit"></i> Chỉnh sửa nhà cung cấp
+            </a>
+            
+            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
+              <i class="fas fa-trash"></i> Xóa nhà cung cấp
+            </button>
+            
+            <a href="/suppliers" class="btn btn-secondary">
+              <i class="fas fa-list"></i> Danh sách nhà cung cấp
+            </a>
+            
+            <a href="/suppliers/new" class="btn btn-success">
+              <i class="fas fa-plus"></i> Thêm nhà cung cấp mới
+            </a>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Products from this supplier -->
+      <div class="card mt-3">
+        <div class="card-header">
+          <h6>Sản phẩm từ nhà cung cấp này</h6>
+        </div>
+        <div class="card-body">
+          <% if (products && products.length > 0) { %>
+            <div class="list-group list-group-flush">
+              <% products.forEach(product => { %>
+                <div class="list-group-item d-flex justify-content-between align-items-center">
+                  <div>
+                    <strong><%= product.name %></strong>
+                    <br>
+                    <small class="text-muted">
+                      <%= new Intl.NumberFormat('vi-VN', {
+                        style: 'currency', 
+                        currency: 'VND'
+                      }).format(product.price) %>
+                    </small>
+                  </div>
+                  <a href="/products/<%= product._id %>" class="btn btn-outline-primary btn-sm">
+                    Xem
+                  </a>
+                </div>
+              <% }) %>
+            </div>
+            <div class="mt-2">
+              <small class="text-muted">Tổng cộng: <%= products.length %> sản phẩm</small>
+            </div>
+          <% } else { %>
+            <p class="text-muted">Chưa có sản phẩm nào từ nhà cung cấp này.</p>
+            <a href="/products/new" class="btn btn-sm btn-outline-success">
+              <i class="fas fa-plus"></i> Thêm sản phẩm
+            </a>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteModalLabel">Xác nhận xóa</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Bạn có chắc chắn muốn xóa nhà cung cấp "<strong><%= supplier.name %></strong>" không?
+        <br><br>
+        <% if (products && products.length > 0) { %>
+          <div class="alert alert-warning">
+            <strong>Cảnh báo:</strong> Nhà cung cấp này có <%= products.length %> sản phẩm liên quan. 
+            Việc xóa nhà cung cấp sẽ ảnh hưởng đến các sản phẩm này.
+          </div>
+        <% } %>
+        <small class="text-danger">Hành động này không thể hoàn tác!</small>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+        <form action="/suppliers/<%= supplier._id %>?_method=DELETE" method="POST" style="display: inline;">
+          <button type="submit" class="btn btn-danger">Xóa</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

@@ -1,0 +1,140 @@
+<%- include('../partials/header') %>
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h4 class="card-title mb-0">
+                    <i class="fas fa-plus-circle me-2"></i>
+                    Add New Product
+                </h4>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="/products" novalidate>
+                    <div class="mb-3">
+                        <label for="name" class="form-label">
+                            <i class="fas fa-tag me-1"></i>
+                            Product Name <span class="text-danger">*</span>
+                        </label>
+                        <input type="text" 
+                               class="form-control" 
+                               id="name" 
+                               name="name" 
+                               placeholder="Enter product name"
+                               required
+                               maxlength="100">
+                        <div class="form-text">Maximum 100 characters</div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="price" class="form-label">
+                                    <i class="fas fa-dollar-sign me-1"></i>
+                                    Price <span class="text-danger">*</span>
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input type="number" 
+                                           class="form-control" 
+                                           id="price" 
+                                           name="price" 
+                                           placeholder="0.00"
+                                           step="0.01"
+                                           min="0"
+                                           required>
+                                </div>
+                                <div class="form-text">Enter price in dollars</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="quantity" class="form-label">
+                                    <i class="fas fa-cubes me-1"></i>
+                                    Quantity <span class="text-danger">*</span>
+                                </label>
+                                <input type="number" 
+                                       class="form-control" 
+                                       id="quantity" 
+                                       name="quantity" 
+                                       placeholder="0"
+                                       min="0"
+                                       required>
+                                <div class="form-text">Available quantity in stock</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="supplierId" class="form-label">
+                            <i class="fas fa-truck me-1"></i>
+                            Supplier <span class="text-danger">*</span>
+                        </label>
+                        <select class="form-select" id="supplierId" name="supplierId" required>
+                            <option value="">Select a supplier...</option>
+                            <% suppliers.forEach(supplier => { %>
+                                <option value="<%= supplier._id %>"><%= supplier.name %></option>
+                            <% }); %>
+                        </select>
+                        <div class="form-text">
+                            <% if (suppliers.length === 0) { %>
+                                <span class="text-warning">
+                                    <i class="fas fa-exclamation-triangle me-1"></i>
+                                    No suppliers available. 
+                                    <a href="/suppliers/new">Add a supplier first</a>
+                                </span>
+                            <% } else { %>
+                                Choose the supplier for this product
+                            <% } %>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="/products" class="btn btn-secondary me-md-2">
+                            <i class="fas fa-times me-2"></i>Cancel
+                        </a>
+                        <button type="submit" class="btn btn-info" <%= suppliers.length === 0 ? 'disabled' : '' %>>
+                            <i class="fas fa-save me-2"></i>Save Product
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Form validation
+    document.querySelector('form').addEventListener('submit', function(e) {
+        const name = document.getElementById('name').value.trim();
+        const price = document.getElementById('price').value.trim();
+        const quantity = document.getElementById('quantity').value.trim();
+        const supplierId = document.getElementById('supplierId').value;
+
+        if (!name || !price || !quantity || !supplierId) {
+            e.preventDefault();
+            alert('Please fill in all required fields.');
+            return false;
+        }
+
+        // Price validation
+        const priceValue = parseFloat(price);
+        if (isNaN(priceValue) || priceValue < 0) {
+            e.preventDefault();
+            alert('Please enter a valid price (0 or greater).');
+            document.getElementById('price').focus();
+            return false;
+        }
+
+        // Quantity validation
+        const quantityValue = parseInt(quantity);
+        if (isNaN(quantityValue) || quantityValue < 0) {
+            e.preventDefault();
+            alert('Please enter a valid quantity (0 or greater).');
+            document.getElementById('quantity').focus();
+            return false;
+        }
+    });
+</script>
+
+<%- include('../partials/footer') %>
